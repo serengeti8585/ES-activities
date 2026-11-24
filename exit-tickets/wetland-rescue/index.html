@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123c35">
+<title>Wetland Rescue</title>
+<link rel="icon" href="data:,">
+<style>
+:root{color-scheme:light;--ink:#153930;--muted:#47645b;--paper:#fffef9;--line:#d8e2d7;--green:#125b46;--lime:#def3a7}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:#f1f4e9;color:var(--ink);font:1rem/1.5 system-ui,sans-serif}
+header{background:#123c35;color:#fff}
+.brand,main{max-width:1300px;margin:auto}
+.brand{display:flex;align-items:center;gap:.7rem;padding:.85rem clamp(1rem,3vw,2.5rem);font-weight:750;letter-spacing:.02em}
+.brand svg{width:32px;height:32px;background:var(--lime);color:var(--ink);border-radius:10px;padding:5px}
+main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(1rem,2.4vw,2rem);padding:clamp(1rem,3vw,2.5rem);align-items:start}
+figure,.activity{margin:0;border:1px solid var(--line);border-radius:22px;background:var(--paper);box-shadow:0 10px 28px #193d2210;min-width:0}
+figure{overflow:hidden}
+.scene-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.3rem 1rem;background:#173f35;color:white;padding:.8rem 1.15rem}
+.scene-head strong{font-size:1.05rem}
+.scene-head span{font-size:.875rem;color:var(--lime)}
+#wetland{display:block;width:100%;height:auto;background:#cedfb2}
+figcaption{padding:.85rem 1.15rem 1.1rem}
+.dashboard-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.1rem .7rem;margin-bottom:.65rem}
+small{color:var(--muted);font-size:.875rem}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}
+.metric{padding:.65rem .7rem;border-radius:11px;background:#edf3e9;display:grid;gap:.18rem;align-content:space-between}
+.metric span{font-size:.875rem;line-height:1.25}
+.metric strong{font-size:1.35rem;font-variant-numeric:tabular-nums}
+progress{width:100%;height:.45rem;border:0;border-radius:999px;overflow:hidden;appearance:none;background:#d6e3d3}
+progress::-webkit-progress-bar{background:#d6e3d3}
+progress::-webkit-progress-value{background:#2e775b;border-radius:999px}
+.activity{padding:clamp(1.15rem,2.6vw,2.3rem);overflow-wrap:anywhere}
+.eyebrow{color:var(--green);font-size:.875rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0 0 .65rem}
+h1,h2,h3,p{margin:0 0 .8rem}
+h1,h2{line-height:1.15;letter-spacing:-.025em}
+h1{font-size:clamp(2.6rem,5.2vw,4.6rem);text-transform:uppercase;line-height:.98;margin-bottom:1.25rem}
+h2{font-size:clamp(1.36rem,2.4vw,2rem)}
+.intro{font-size:1.13rem;margin-bottom:1.35rem}
+button{font:inherit;font-weight:750;cursor:pointer;min-height:48px;padding:.62rem 1rem;border:1px solid transparent;border-radius:10px;color:white;background:var(--green)}
+button:hover:not(:disabled){background:#0b4937}
+button:disabled{cursor:default;color:#4d665b;background:#e1e8de}
+button.secondary{color:var(--green);background:#edf4e8;border-color:#c8dbcd}
+button.secondary:hover{background:#dcecdc}
+:focus-visible{outline:3px solid #ac580b;outline-offset:3px}
+fieldset{padding:0;border:0;margin:1rem 0;min-inline-size:0;display:grid;gap:.48rem}
+.choice{display:flex;align-items:center;gap:.68rem;min-height:49px;padding:.5rem .65rem;border:1px solid #cadbce;border-radius:10px;cursor:pointer;background:#f8faf4}
+.choice:hover,.choice:has(input:checked){background:#e5f1df;border-color:#3d795b}
+.choice:has(input:disabled){cursor:default}
+.choice input{width:1.13rem;height:1.13rem;flex:none;margin:0;accent-color:var(--green)}
+.letter{font-weight:800;color:var(--green)}
+.feedback{padding:.85rem 1rem;background:#e6f3e7;border-left:4px solid #28754e;border-radius:8px;margin:.85rem 0}
+.feedback.miss{background:#fbf0da;border-color:#9b6923}
+.feedback h3{margin:0 0 .35rem;font-size:1.08rem}
+.feedback p:last-child{margin-bottom:0}
+.actions{display:flex;flex-wrap:wrap;gap:.6rem}
+#restoration-note{margin:.65rem 0 0}
+#result-score{font-size:1.25rem;font-weight:800}
+#concepts{padding-left:1.25rem}
+.review-list{padding-left:1.45rem}
+.review-list li{padding:.5rem 0;border-bottom:1px solid var(--line)}
+.review-list p{margin:.3rem 0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+#water,#ditch,#mud,.recovery,#bird-head{transition:fill 2.35s,opacity 2.35s,transform 2.35s}
+.recovery{opacity:0}
+#wetland.hydrology #water{fill:#608d7c}
+#wetland.clean #water{fill:#328f87}
+#wetland.hydrology #ditch{opacity:.25}
+#wetland.hydrology .hydrology,#wetland.habitat .habitat,#wetland.clean .clean{opacity:1}
+#wetland.habitat #mud{fill:#637c49}
+#wetland.clean #bird-head{transform:rotate(14deg)}
+#bird-head{transform-origin:448px 272px}
+#shoal{transform:translateX(-70px)}
+#wetland.clean #shoal{transform:translateX(0)}
+#wetland.instant *{transition:none!important}
+@media (max-width:720px){main{grid-template-columns:1fr;max-width:680px}}
+@media (max-width:390px){figcaption{padding-inline:.65rem}.metric{padding:.5rem .35rem}}
+@media (prefers-reduced-motion:reduce){#wetland *{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17c3-3 5 3 9 0s6 3 9 0M3 21c3-3 5 3 9 0s6 3 9 0M12 15V3m0 9C5 12 6 6 6 6s6 0 6 6m0 2c6 0 7-6 7-6s-7 0-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span id="brand-title">Wetland Rescue</span></div></header>
+<main>
+<figure>
+<div class="scene-head"><strong>Florida freshwater wetland</strong><span id="scene-status">Restoration needed</span></div>
+<svg id="wetland" viewBox="0 0 620 408" role="img" aria-labelledby="scene-title scene-description" xmlns="http://www.w3.org/2000/svg">
+<title id="scene-title">Illustrated Florida freshwater wetland</title>
+<desc id="scene-description">Shallow water, a straight drainage ditch, bare banks, bald cypress trees, cattails, fish, and a white wading bird.</desc>
+<defs>
+  <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#a7d3c0"/><stop offset="1" stop-color="#f4e2a6"/></linearGradient>
+  <linearGradient id="water-shade" x2="0" y2="1"><stop stop-color="#fff1b8" stop-opacity=".30"/><stop offset="1" stop-color="#133b4a" stop-opacity=".32"/></linearGradient>
+  <g id="cypress">
+    <path d="M-16 0Q-6-10-5-66L-2-132H4L7-60Q7-16 17 0Z" fill="#675943"/>
+    <path d="M0-14 2-109M2-66-19-86M2-78 22-100" fill="none" stroke="#987c54" stroke-width="3"/>
+    <path d="M-38-87Q-48-102-26-109Q-34-125-15-131Q-13-153 5-151Q20-150 21-130Q40-128 33-113Q56-110 43-96Q52-81 24-80Q8-74-9-82Q-33-76-38-87Z" fill="currentColor"/>
+    <path d="M-24-109Q-10-116-5-109M-12-131Q-3-139 7-133M10-101Q22-109 30-102" fill="none" stroke="#c1ca78" stroke-opacity=".45" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="cattail">
+    <path d="M0 0Q-5-20-17-31Q-12-13-5 0M5 0Q8-35 21-42Q13-22 10 0M-5 0Q-15-18-21-17L-12 0" fill="currentColor"/>
+    <path d="M0 0-2-47M8 0 12-37" stroke="#526740" stroke-width="2.5"/>
+    <path d="M-2-44v-9m14 20v-9" stroke="#79492d" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g id="sedge"><path d="M0 0Q-12-24-26-28Q-18-15-12 0Q-24-14-31-11L-21 0M-3 0Q-14-31-9-40Q-4-24 2-4Q1-32 13-45Q11-19 7 0Q17-25 26-24Q20-12 16 0Z" fill="currentColor"/></g>
+  <g id="fish"><path d="M0 0Q13-13 29-3L38-10V8L29 2Q14 13 0 0Z" fill="currentColor"/><path d="M8 0Q17 3 24 0" stroke="#c5d4a0" stroke-width="1.2" fill="none"/><circle cx="6" cy="-1" r="1.6" fill="#183c3c"/></g>
+</defs>
+<rect width="620" height="408" fill="url(#sky)"/>
+<circle cx="464" cy="81" r="46" fill="#fff2be" opacity=".88"/>
+<path d="M18 76q23-17 45-3 24-13 57 5H18m245 13q22-18 49-4 27-7 49 6h-98m246 37q31-13 56-4 27-9 55 6H509" fill="#f8efd0" opacity=".6"/>
+<path d="M0 173q78-38 154-18 75-36 163-8 70-24 140 4 86-29 163 10v70H0Z" fill="#75916c"/>
+<path d="M0 191q95-42 199-11 75-25 131-3 138-35 290 2v62H0Z" fill="#426d56"/>
+<g color="#567a54"><use href="#cypress" transform="translate(231 185) scale(.58)"/><use href="#cypress" transform="translate(282 180) scale(.38)"/><use href="#cypress" transform="translate(525 193) scale(.57)"/><use href="#cypress" transform="translate(568 191) scale(.68)"/></g>
+<path id="water" d="M0 204Q139 212 231 196T442 200Q529 210 620 191V408H0Z" fill="#84906a"/>
+<path d="M0 204Q139 212 231 196T442 200Q529 210 620 191V408H0Z" fill="url(#water-shade)"/>
+<path d="M0 185q63-23 121 0 44 14 94 4 38 20 1 29-52 14-104 20-63 8-112 26Z" fill="#7a814b"/>
+<path d="M0 208q74-29 129-12 39 9 88-2-7 13-62 16-73 5-155 41Z" fill="#a2a05d"/>
+<g color="#3c6848"><use href="#cypress" transform="translate(48 221) scale(1.11)"/><use href="#cypress" transform="translate(116 211) scale(.87)"/><use href="#cypress" transform="translate(173 203) scale(.57)"/></g>
+<path d="M73 222l8-20 5 20m40-4 9-15 4 13" fill="#735c42"/>
+<g fill="none" stroke="#e6e6ac" stroke-width="2" stroke-linecap="round" opacity=".46">
+  <path d="M19 261h55m13-5h20m56 7h56m28-22h68m-108 52h23m36 5h73m46-67h46m31-13h31m33 33h62m-219 75h67m22-10h26m-289 16h39m13 16h64m32 30h83m-220 3h20m-148-83h38"/>
+</g>
+<path id="mud" d="M0 317q69-34 147-22 61 9 45 33-8 14-56 19-47 8-68 61H0Z" fill="#9e805a"/>
+<path d="M0 342q70-36 138-36l-36 9-29 17-36 10-37 28Zm620-103-66 26-21 29 5 25-67 89h149Z" fill="#bd9b68"/>
+<g id="ditch">
+  <path d="m620 258-65 30-53 120h-55l91-128 82-33Z" fill="#695b43"/>
+  <path d="m620 265-64 31-39 112h-52l80-118 75-32Z" fill="#555e4b"/>
+  <path d="m620 275-58 26-43 107h-34l69-109 66-28Z" fill="#8a9272"/>
+</g>
+<path class="recovery hydrology" d="m541 302 22-11 12 17-26 14-27 1Z" fill="#75804b"/>
+<path class="recovery hydrology" d="M535 294q-26 7-44 4m37 18q-29 7-55 4m40 13q-24 5-49 3" fill="none" stroke="#d3e9ba" stroke-width="3" stroke-linecap="round"/>
+<g fill="#866748" opacity=".85"><path d="m53 316 15-5 10 4-18 5Zm66 6 9-5 11 4-12 5Zm451 30 15-9 9 5-11 8Z"/><path d="m591 373 10-5 13 5-12 5Z"/></g>
+<g color="#65783e"><use href="#cattail" transform="translate(31 319) scale(.86)"/><use href="#sedge" transform="translate(97 315) scale(.8)"/><use href="#cattail" transform="translate(144 234) scale(.49)"/><use href="#cattail" transform="translate(594 259) scale(.63)"/></g>
+<g class="recovery habitat" color="#688d42"><use href="#cattail" transform="translate(71 349) scale(1.35)"/><use href="#sedge" transform="translate(128 339) scale(1.14)"/><use href="#cattail" transform="translate(158 324) scale(.86)"/><use href="#sedge" transform="translate(568 368) scale(1.2)"/><use href="#cattail" transform="translate(596 345) scale(1.15)"/><use href="#sedge" transform="translate(207 225) scale(.52)"/><path d="M175 348q26-11 46 0-26 10-46 0m46-21q22-9 34 1-21 7-34-1" fill="#8fa64f"/><circle cx="200" cy="345" r="4" fill="#fff2cd"/></g>
+<g color="#587359"><use href="#fish" transform="translate(220 318) scale(.83)"/><use href="#fish" transform="translate(316 353) scale(-.66 .66)"/></g>
+<g id="shoal" class="recovery clean" color="#c6cf82"><use href="#fish" transform="translate(325 297) scale(.95)"/><use href="#fish" transform="translate(374 339) scale(.7)"/><use href="#fish" transform="translate(441 361) scale(.85)"/><use href="#fish" transform="translate(395 310) scale(.6)"/></g>
+<g id="bird">
+  <ellipse cx="441" cy="306" rx="25" ry="3" fill="#456451" opacity=".45"/>
+  <path d="m436 280 4 23-10 1m20-25 3 25 8 1" fill="none" stroke="#433d31" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M412 268q15 6 22 1 18-14 28-2 5 10-10 17-24 7-40-16Z" fill="#faf4de"/>
+  <path d="M424 273q9 10 25 4" fill="none" stroke="#c7d1b5" stroke-width="2.5"/>
+  <g id="bird-head"><path d="M449 275q20-15 12-28-14-9-9-20 6-10 19-3l-5 6q-10-4-6 6 2 4 7 9 11 13-10 32" fill="#fff8e2"/><path d="m468 224 24 7-26 0Z" fill="#c98933"/><circle cx="465" cy="226" r="1.5" fill="#193b33"/></g>
+</g>
+<g color="#536f42"><use href="#sedge" transform="translate(21 408) scale(1.6)"/><use href="#cattail" transform="translate(59 408) scale(1.34)"/><use href="#sedge" transform="translate(606 408) scale(1.65)"/></g>
+</svg>
+<figcaption>
+<div class="dashboard-head"><strong>Wetland health</strong><small>Fictional game scores</small></div>
+<div class="metrics">
+<div class="metric"><span id="quality-label">Water Quality</span><strong id="quality-value" aria-hidden="true">38</strong><progress id="quality" aria-labelledby="quality-label" max="100" value="38"></progress></div>
+<div class="metric"><span id="wildlife-label">Wildlife Health</span><strong id="wildlife-value" aria-hidden="true">32</strong><progress id="wildlife" aria-labelledby="wildlife-label" max="100" value="32"></progress></div>
+<div class="metric"><span id="habitat-label">Habitat Condition</span><strong id="habitat-value" aria-hidden="true">40</strong><progress id="habitat" aria-labelledby="habitat-label" max="100" value="40"></progress></div>
+</div>
+</figcaption>
+</figure>
+<section class="activity" aria-label="Mission activity">
+<div id="welcome">
+<p class="eyebrow">Environmental science exit ticket</p>
+<h1 id="activity-title">Wetland Rescue</h1>
+<p id="intro" class="intro">Your mission: Help restore a damaged Florida wetland by using your environmental science knowledge.</p>
+<button id="start" type="button" disabled>Start Mission</button>
+<noscript><p>Enable JavaScript to answer questions. The wetland scene is visible above.</p></noscript>
+</div>
+<div id="question-screen" hidden>
+<p class="eyebrow" id="question-count"></p>
+<h2 id="question-title" tabindex="-1" aria-describedby="question-count"></h2>
+<form id="answer-form">
+<fieldset id="choices" aria-labelledby="question-title"></fieldset>
+<button id="submit" type="submit" disabled>Submit Answer</button>
+</form>
+<div id="feedback" class="feedback" hidden>
+<h3 id="feedback-title" tabindex="-1"></h3>
+<p id="correct-answer" hidden></p>
+<p id="explanation"></p>
+<p id="improvement" hidden></p>
+</div>
+<div class="actions">
+<button id="next" type="button" hidden>Next Question</button>
+<button id="skip" class="secondary" type="button" hidden>Skip Animation</button>
+</div>
+</div>
+<div id="restoration-screen" hidden>
+<p class="eyebrow">Restoration recap</p>
+<h2 id="restoration-title" tabindex="-1">Watch the wetland recover</h2>
+<p>The remaining restoration steps bring the wetland back to health.</p>
+<button id="skip-finale" class="secondary" type="button">Skip Animation</button>
+</div>
+<div id="results" hidden>
+<h2 id="results-title" tabindex="-1">Mission Complete!</h2>
+<p id="result-score"></p>
+<p id="result-message"></p>
+<h3>Concepts reviewed</h3>
+<ul id="concepts"></ul>
+<div id="missed" hidden><h3>What to review</h3><ul id="missed-list"></ul></div>
+<div class="actions"><button id="retry" type="button">Try Again</button><button id="review-button" class="secondary" type="button">Review Answers</button></div>
+</div>
+<div id="review" hidden>
+<h2 id="review-title" tabindex="-1">Review Answers</h2>
+<ol id="review-list" class="review-list"></ol>
+<div class="actions"><button id="back" type="button">Back to Results</button><button id="review-retry" class="secondary" type="button">Try Again</button></div>
+</div>
+<p id="restoration-note" class="sr-only" role="status"></p>
+</section>
+</main>
+<script>
+'use strict';
+
+// TEACHER_CONFIGURATION
+// QUESTION BANK — provisional questions for the prototype.
+// Edit the text directly. The app displays it verbatim.
+// Add or remove entries to change the question count. Keep at least one question.
+// correctAnswer is the zero-based choice index: A = 0, B = 1, C = 2, D = 3.
+// Optional restoration links a correct response to a matching wetland change.
+// For new questions, omit restoration to advance the available wetland changes in order.
+const TEACHER_CONFIGURATION = {
+  title: 'Wetland Rescue',
+  introduction: 'Your mission: Help restore a damaged Florida wetland by using your environmental science knowledge.',
+  questions: [
+    {
+      text: 'Which action would most directly restore natural water levels in a wetland affected by an artificial drainage ditch?',
+      choices: ['Build a wildlife observation platform', 'Modify or close the drainage ditch', 'Add fertilizer to the wetland', 'Remove native wetland plants'],
+      correctAnswer: 1,
+      explanation: 'Modifying or closing the drainage ditch can help restore natural water levels and wetland hydrology.',
+      concept: 'Natural water levels and wetland hydrology',
+      restoration: 'hydrology'
+    },
+    {
+      text: 'Which is an important ecosystem service provided by wetlands?',
+      choices: ['Preventing all hurricanes', 'Eliminating all pollution', 'Storing floodwater and reducing some flood impacts', 'Preventing evaporation'],
+      correctAnswer: 2,
+      explanation: 'Wetlands can temporarily store floodwater and help reduce flooding impacts.',
+      concept: 'Floodwater storage as an ecosystem service',
+      restoration: 'habitat'
+    },
+    {
+      text: 'Which action would best reduce excess nutrient pollution entering a wetland?',
+      choices: ['Increase fertilizer use near the water', 'Remove all vegetation along the shoreline', 'Drain the wetland completely', 'Reduce fertilizer runoff from nearby land'],
+      correctAnswer: 3,
+      explanation: 'Reducing fertilizer runoff helps limit excess nutrients that can harm wetland water quality.',
+      concept: 'Nutrient pollution from fertilizer runoff',
+      restoration: 'clean'
+    }
+  ]
+};
+
+const RESTORATION_STEPS = {
+  hydrology: {scores: [17, 8, 15], description: 'The ditch is partially blocked so more water can stay in the wetland.'},
+  habitat: {scores: [8, 16, 26], description: 'Native plants return to the wetland banks, where they provide cover for wildlife.'},
+  clean: {scores: [27, 32, 11], description: 'The water clears, more fish appear, and the wading bird starts looking for food.'}
+};
+const startingScores = [38, 32, 40];
+const scoreIds = ['quality', 'wildlife', 'habitat'];
+const letters = ['A', 'B', 'C', 'D'];
+const {title, introduction, questions} = TEACHER_CONFIGURATION;
+const get = id => document.getElementById(id);
+const wetland = get('wetland');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const screens = ['welcome', 'question-screen', 'restoration-screen', 'results', 'review'];
+const appliedSteps = new Set();
+let responses = [];
+let index = 0;
+let animationTimer;
+let finishAnimation;
+
+document.title = title;
+get('brand-title').textContent = title;
+get('activity-title').textContent = title;
+get('intro').textContent = introduction;
+
+function showScreen(id, focusId) {
+  for (const screen of screens) get(screen).hidden = screen !== id;
+  get(focusId).focus();
+}
+
+function renderQuestion() {
+  const question = questions[index];
+  get('question-count').textContent = `Question ${index + 1} of ${questions.length}`;
+  get('question-title').textContent = question.text;
+  get('choices').replaceChildren(...question.choices.map((choice, choiceIndex) => {
+    const label = document.createElement('label');
+    label.className = 'choice';
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'answer';
+    input.value = choiceIndex;
+    const letter = document.createElement('span');
+    letter.className = 'letter';
+    letter.textContent = letters[choiceIndex] + '.';
+    const text = document.createElement('span');
+    text.textContent = choice;
+    label.append(input, letter, text);
+    return label;
+  }));
+  get('choices').disabled = false;
+  get('submit').hidden = false;
+  get('submit').disabled = true;
+  get('feedback').hidden = true;
+  get('next').hidden = true;
+  get('skip').hidden = true;
+  showScreen('question-screen', 'question-title');
+}
+
+function updateScene() {
+  const scores = [...startingScores];
+  for (const step of Object.keys(RESTORATION_STEPS)) {
+    const active = appliedSteps.has(step);
+    wetland.classList.toggle(step, active);
+    if (active) RESTORATION_STEPS[step].scores.forEach((points, i) => { scores[i] += points; });
+  }
+  scoreIds.forEach((id, i) => {
+    get(id).value = scores[i];
+    get(id + '-value').textContent = scores[i];
+  });
+  const count = appliedSteps.size;
+  get('scene-status').textContent = ['Restoration needed', 'Recovery underway', 'Recovery underway', 'Wetland restored'][count];
+  get('scene-description').textContent = [
+    'A Florida freshwater wetland with shallow water, bald cypress trees, cattails, fish, and a white wading bird.',
+    appliedSteps.has('hydrology') ? 'More water stays in the wetland after the drainage ditch is partially blocked.' : 'An open drainage ditch crosses the bare bank.',
+    appliedSteps.has('habitat') ? 'Native vegetation fills in along the banks.' : 'Some of the banks are bare.',
+    appliedSteps.has('clean') ? 'Clearer water reveals more fish, and the wading bird looks for food.' : 'The water is murky.'
+  ].join(' ');
+}
+
+function animateRestoration(steps, skipButton, onComplete) {
+  const instant = reducedMotion.matches;
+  wetland.classList.toggle('instant', instant);
+  // Commit the starting style so a transition can begin even after a screen change.
+  wetland.getBoundingClientRect();
+  for (const step of steps) appliedSteps.add(step);
+  updateScene();
+  finishAnimation = () => {
+    window.clearTimeout(animationTimer);
+    finishAnimation = undefined;
+    const skipHadFocus = document.activeElement === skipButton;
+    skipButton.hidden = true;
+    get('restoration-note').textContent = steps.map(step => RESTORATION_STEPS[step].description).join(' ');
+    onComplete(skipHadFocus);
+  };
+  skipButton.hidden = instant;
+  if (instant) finishAnimation();
+  else animationTimer = window.setTimeout(finishAnimation, 2400);
+}
+
+function skipAnimation() {
+  if (!finishAnimation) return;
+  wetland.classList.add('instant');
+  finishAnimation();
+}
+
+function answerText(question, choice) {
+  return `${letters[choice]}. ${question.choices[choice]}`;
+}
+
+get('choices').addEventListener('change', () => { get('submit').disabled = false; });
+get('answer-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const selected = get('choices').querySelector(':checked');
+  if (!selected || responses.length !== index) return;
+  const question = questions[index];
+  const answer = Number(selected.value);
+  const correct = answer === question.correctAnswer;
+  responses.push(answer);
+  get('choices').disabled = true;
+  get('submit').hidden = true;
+  get('feedback').classList.toggle('miss', !correct);
+  get('feedback-title').textContent = correct ? '✓ Correct!' : 'Not quite — let’s learn why.';
+  get('correct-answer').textContent = 'Correct answer: ' + answerText(question, question.correctAnswer);
+  get('correct-answer').hidden = correct;
+  get('explanation').textContent = question.explanation;
+  get('improvement').hidden = true;
+  get('feedback').hidden = false;
+  get('feedback-title').focus();
+  get('next').textContent = index + 1 === questions.length ? 'See Results' : 'Next Question';
+
+  const available = Object.keys(RESTORATION_STEPS).filter(step => !appliedSteps.has(step));
+  const step = available.includes(question.restoration) ? question.restoration : available[0];
+  if (correct && step) {
+    get('improvement').textContent = RESTORATION_STEPS[step].description;
+    get('improvement').hidden = false;
+    animateRestoration([step], get('skip'), skipHadFocus => {
+      get('next').hidden = false;
+      if (skipHadFocus) get('next').focus();
+    });
+  } else {
+    get('next').hidden = false;
+  }
+});
+
+function renderResults() {
+  const missed = questions.filter((question, i) => responses[i] !== question.correctAnswer);
+  const correct = questions.length - missed.length;
+  get('result-score').textContent = `${correct} out of ${questions.length} correct · ${Math.round(100 * correct / questions.length)}%`;
+  get('result-message').textContent = missed.length === 0
+    ? (questions.length === 3 ? 'Excellent! You’ve demonstrated all three concepts.' : 'Excellent! You’ve demonstrated all the concepts.')
+    : missed.length === 1 ? 'Good work! Review the concept you missed.'
+    : 'Keep learning! Review the explanations and try again.';
+  get('concepts').replaceChildren(...questions.map(question => listItem(question.concept || question.text)));
+  get('missed-list').replaceChildren(...missed.map(question => listItem(question.explanation)));
+  get('missed').hidden = missed.length === 0;
+  showScreen('results', 'results-title');
+}
+
+function listItem(text) {
+  const item = document.createElement('li');
+  item.textContent = text;
+  return item;
+}
+
+function advance() {
+  if (index + 1 < questions.length) {
+    index += 1;
+    renderQuestion();
+    return;
+  }
+  const remaining = Object.keys(RESTORATION_STEPS).filter(step => !appliedSteps.has(step));
+  if (remaining.length) {
+    showScreen('restoration-screen', 'restoration-title');
+    animateRestoration(remaining, get('skip-finale'), renderResults);
+  } else {
+    renderResults();
+  }
+}
+
+function reviewAnswers() {
+  get('review-list').replaceChildren(...questions.map((question, i) => {
+    const item = document.createElement('li');
+    const heading = document.createElement('strong');
+    heading.textContent = question.text;
+    item.append(heading);
+    const correct = responses[i] === question.correctAnswer;
+    for (const line of [
+      `Your answer (${correct ? 'correct' : 'incorrect'}): ${answerText(question, responses[i])}`,
+      'Correct answer: ' + answerText(question, question.correctAnswer),
+      question.explanation
+    ]) {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = line;
+      item.append(paragraph);
+    }
+    return item;
+  }));
+  showScreen('review', 'review-title');
+}
+
+function startMission() {
+  window.clearTimeout(animationTimer);
+  finishAnimation = undefined;
+  index = 0;
+  responses = [];
+  appliedSteps.clear();
+  get('restoration-note').textContent = '';
+  wetland.classList.add('instant');
+  updateScene();
+  wetland.getBoundingClientRect();
+  renderQuestion();
+}
+
+get('start').disabled = false;
+get('start').addEventListener('click', startMission);
+get('retry').addEventListener('click', startMission);
+get('review-retry').addEventListener('click', startMission);
+get('next').addEventListener('click', advance);
+get('skip').addEventListener('click', skipAnimation);
+get('skip-finale').addEventListener('click', skipAnimation);
+get('review-button').addEventListener('click', reviewAnswers);
+get('back').addEventListener('click', renderResults);
+</script>
+</body>
+</html>
